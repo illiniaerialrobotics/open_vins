@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
+import numpy as np
 import rospy
+import tf.transformations as tft
 import tf2_ros
 import tf2_geometry_msgs
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, TransformStamped, Vector3Stamped
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Vector3Stamped
 
 
 class OdomFrameTransformer:
@@ -25,10 +27,17 @@ class OdomFrameTransformer:
         self.pub_pose_cov = rospy.Publisher(
             '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
         )
-        self.pub_pose_cov = rospy.Publisher(
-            '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
-        )
-        
+
+        # If True: twist.linear/angular are rotated into header.frame_id ("global").
+        # nav_msgs/Odometry convention expects twist in child_frame_id ("base_link");
+        # enable this only if downstream explicitly wants world-frame velocities.
+        self.express_twist_in_global = rospy.get_param("~express_twist_in_global", False)
+        if self.express_twist_in_global:
+            rospy.logwarn(
+                "express_twist_in_global:=true: twist is in 'global', not child_frame_id "
+                "(non-standard for nav_msgs/Odometry)."
+            )
+
         rospy.loginfo("Transformer initialized. Mapping [world -> global -> imu -> base_link]")
 
     def callback(self, msg):
@@ -74,12 +83,46 @@ class OdomFrameTransformer:
             out_msg.child_frame_id = "base_link"
 
             out_msg.pose.pose = ps_transformed.pose
-            out_msg.twist.twist.linear = v_lin_transformed.vector
-            out_msg.twist.twist.angular = v_ang_transformed.vector
+            lin_vec = v_lin_transformed.vector
+            ang_vec = v_ang_transformed.vector
+            twist_cov = np.array(msg.twist.covariance, dtype=float).reshape(6, 6)
 
-            # Preserve covariances from the filter (same frame convention as input odomimu)
+            if self.express_twist_in_global:
+                # Rotate free vectors from base_link into global using current attitude.
+                q = ps_transformed.pose.orientation
+                rot_tf = TransformStamped()
+                rot_tf.header.stamp = msg.header.stamp
+                rot_tf.header.frame_id = "global"
+                rot_tf.child_frame_id = "base_link"
+                rot_tf.transform.translation.x = 0.0
+                rot_tf.transform.translation.y = 0.0
+                rot_tf.transform.translation.z = 0.0
+                rot_tf.transform.rotation = q
+
+                v_lin_g = Vector3Stamped()
+                v_lin_g.header.frame_id = "base_link"
+                v_lin_g.header.stamp = msg.header.stamp
+                v_lin_g.vector = lin_vec
+                lin_vec = tf2_geometry_msgs.do_transform_vector3(v_lin_g, rot_tf).vector
+
+                v_ang_g = Vector3Stamped()
+                v_ang_g.header.frame_id = "base_link"
+                v_ang_g.header.stamp = msg.header.stamp
+                v_ang_g.vector = ang_vec
+                ang_vec = tf2_geometry_msgs.do_transform_vector3(v_ang_g, rot_tf).vector
+
+                R = tft.quaternion_matrix([q.x, q.y, q.z, q.w])[:3, :3]
+                T6 = np.zeros((6, 6))
+                T6[0:3, 0:3] = R
+                T6[3:6, 3:6] = R
+                twist_cov = T6 @ twist_cov @ T6.T
+
+            out_msg.twist.twist.linear = lin_vec
+            out_msg.twist.twist.angular = ang_vec
+
+            # Preserve pose covariance; twist covariance rotated if express_twist_in_global
             out_msg.pose.covariance = list(msg.pose.covariance)
-            out_msg.twist.covariance = list(msg.twist.covariance)
+            out_msg.twist.covariance = twist_cov.reshape(-1).tolist()
 
             self.pub.publish(out_msg)
 
