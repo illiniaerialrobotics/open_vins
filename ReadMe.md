@@ -165,35 +165,35 @@ details on what the system supports.
 
 # Install librealsense-sdk from source 
 
-    - Refer [this](https://github.com/realsenseai/librealsense/blob/c94410a420b74e5fb6a414bd12215c05ddd82b69/doc/installation.md) to instal librealsense v2.50.0 which is the lastest compatible sdk for ros1-legacy.
-    - use the cmake command `cmake ../ -DBUILD_GRAPHICAL_EXAMPLES=true -DBUILD_WITH_CUDA=true -DCMAKE_BUILD_TYPE=Release`
-    - connect camera and run `realsense-viewer` to test installation.
-    - Download and extract compatible firware into the Realsense camera. The compatible FW version can be found [here](https://dev.realsenseai.com/docs/firmware-releases-d400) for our case we need Version-5_13_0_50.
-    - Follow the steps [here](https://dev.realsenseai.com/docs/firmware-update-tool) to flash the camera firmware.
-    - test again with `realsense-viewer`
+  - Refer [this](https://github.com/realsenseai/librealsense/blob/c94410a420b74e5fb6a414bd12215c05ddd82b69/doc/installation.md) to instal librealsense v2.50.0 which is the lastest compatible sdk for ros1-legacy.
+  - use the cmake command `cmake ../ -DBUILD_GRAPHICAL_EXAMPLES=true -DBUILD_WITH_CUDA=true -DCMAKE_BUILD_TYPE=Release`
+  - connect camera and run `realsense-viewer` to test installation.
+  - Download and extract compatible firware into the Realsense camera. The compatible FW version can be found [here](https://dev.realsenseai.com/docs/firmware-releases-d400) for our case we need Version-5_13_0_50.
+  - Follow the steps [here](https://dev.realsenseai.com/docs/firmware-update-tool) to flash the camera firmware.
+  - test again with `realsense-viewer`
 
 # Calibrate camera
-    - in `realsense-viewer` go to `More -> On chip calibration`. Make sure the camera is more than 30cm away facing a white wall.
-    - The camera calibrates by emitting infrared dots and using it to estimate intrinsic/extrinsic parameters [see](https://www.realsenseai.com/stereo-depth/self-calibration-for-depth-cameras/).
-    - To calibrate imu `pip3 install pyrealsense2` then inside librealsense run  `python3 tools/rs-imu-calibration` and follow the instructions. Use a wall+bench or camera box to hold camera steady in different orientations. For more info see [tools/rs-imu-calibration](https://github.com/realsenseai/librealsense/tree/c94410a420b74e5fb6a414bd12215c05ddd82b69/tools/rs-imu-calibration)
-    - Calibrating IMU minimizes drift while using the VIO and should be repeated after any crashes
-    - [calibrate using Kalibr](https://youtu.be/BtzmsuJemgI?si=j955JdZ4IapLuakd) to get intrinsics and extrinsics for Openvins. 
+  - in `realsense-viewer` go to `More -> On chip calibration`. Make sure the camera is more than 30cm away facing a white wall.
+  - The camera calibrates by emitting infrared dots and using it to estimate intrinsic/extrinsic parameters [see](https://www.realsenseai.com/stereo-depth/self-calibration-for-depth-cameras/).
+  - To calibrate imu `pip3 install pyrealsense2` then inside librealsense run  `python3 tools/rs-imu-calibration` and follow the instructions. Use a wall+bench or camera box to hold camera steady in different orientations. For more info see [tools/rs-imu-calibration](https://github.com/realsenseai/librealsense/tree/c94410a420b74e5fb6a414bd12215c05ddd82b69/tools/rs-imu-calibration)
+  - Calibrating IMU minimizes drift while using the VIO and should be repeated after any crashes
+  - [calibrate using Kalibr](https://youtu.be/BtzmsuJemgI?si=j955JdZ4IapLuakd) to get intrinsics and extrinsics for Openvins. 
 
 # Install Realsense-ros
-    - You need to install the `ros1-legacy` branch of realsense-ros in your workspace using 
+  - You need to install the `ros1-legacy` branch of realsense-ros in your workspace using 
 
 ``` git clone https://github.com/realsenseai/realsense-ros.git -b ros1-legacy```
 
-    - after building using `catkin build` you can test by running
+  - after building using `catkin build` you can test by running
 ```roslaunch realsense2_camera rs_camera.launch```
 
-    - you will see rgb publishing with the default config. You need to update the launch params or provide a config to use infrared cameras and enable imu publishing. These are the required inputs to Openvins.
+  - you will see rgb publishing with the default config. You need to update the launch params or provide a config to use infrared cameras and enable imu publishing. These are the required inputs to Openvins.
 ```
 /camera/imu (200Hz linear interpolated accelrometer and gyro)
 /camera/infra1/camera_info (intrinsics)
 /camera/infra1/image_rect_raw (30Hz)
 ```
-    - Important config files in `open_vins/config/rs_d435i`
+  - Important config files in `open_vins/config/rs_d435i`
 
 ```
 estimator_config:         Openvins Estimator Params
