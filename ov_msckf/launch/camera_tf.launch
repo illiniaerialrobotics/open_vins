@@ -1,0 +1,5 @@
+<launch>
+  <!-- OpenVINS subscribe node + imu/base_link extrinsics + odom frame transformer -->
+  <include file="$(find ov_msckf)/launch/subscribe.launch" />
+  <include file="$(find ov_msckf)/launch/vio_tf_static_odom.launch" />
+</launch>

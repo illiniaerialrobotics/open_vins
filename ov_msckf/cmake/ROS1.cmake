@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.3)
 
 # Find ROS build system
-find_package(catkin QUIET COMPONENTS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs image_transport cv_bridge ov_core ov_init)
+find_package(catkin QUIET COMPONENTS roscpp rospy rosbag tf tf2_ros tf2_geometry_msgs tf2_msgs message_filters std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs image_transport cv_bridge ov_core ov_init)
 
 # Describe ROS project
 if (catkin_FOUND AND ENABLE_ROS)
     add_definitions(-DROS_AVAILABLE=1)
     catkin_package(
-            CATKIN_DEPENDS roscpp rosbag tf std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs image_transport cv_bridge ov_core ov_init
+            CATKIN_DEPENDS roscpp rospy rosbag tf tf2_ros tf2_geometry_msgs tf2_msgs message_filters std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs image_transport cv_bridge ov_core ov_init
             INCLUDE_DIRS src/
             LIBRARIES ov_msckf_lib
     )
@@ -130,6 +130,13 @@ if (catkin_FOUND AND ENABLE_ROS)
     
     install(DIRECTORY launch/
             DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+    )
+
+    catkin_install_python(PROGRAMS
+            scripts/mocap_rot.py
+            scripts/tf_odom_rot.py
+            scripts/odom_mocap_rot.py
+            DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 
 endif ()
