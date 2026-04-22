@@ -1,0 +1,26 @@
+<launch>
+  <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+    <arg name="enable_infra"        default="true"/>
+    <arg name="enable_infra1"       value="true"/>
+    <arg name="enable_infra2"       value="true"/>
+    <arg name="enable_depth"        value="false"/>
+    <arg name="enable_color"        value="true"/>
+    
+    <arg name="enable_gyro"         value="true"/>
+    <arg name="enable_accel"        value="true"/>
+    <arg name="unite_imu_method"    value="linear_interpolation"/>
+
+
+    <arg name="fisheye_fps"         default="-1"/>
+    <arg name="depth_fps"           default="-1"/>
+    <arg name="infra_fps"           default="30"/>
+    <arg name="color_fps"           default="-1"/>
+    <arg name="gyro_fps"            default="200"/>
+    <arg name="accel_fps"           default="100"/>
+    
+    <arg name="enable_sync"         value="true"/>
+
+    <arg name="hold_back_imu_for_frames" value="false"/>
+  </include>
+  <rosparam>/camera/stereo_module/emitter_enabled: 2</rosparam>
+</launch>
