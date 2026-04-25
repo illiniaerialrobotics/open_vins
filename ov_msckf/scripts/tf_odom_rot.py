@@ -3,7 +3,7 @@ import rospy
 import tf2_ros
 import tf2_geometry_msgs
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseStamped, Vector3Stamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Vector3Stamped
 
 
 class OdomFrameTransformer:
@@ -77,9 +77,9 @@ class OdomFrameTransformer:
 
             self.pub.publish(out_msg)
 
-            pose_out = PoseStamped()
+            pose_out = PoseWithCovarianceStamped()
             pose_out.header = out_msg.header
-            pose_out.pose = out_msg.pose.pose
+            pose_out.pose = out_msg.pose
             self.pub_pose.publish(pose_out)
 
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:

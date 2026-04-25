@@ -76,16 +76,16 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 # our front-end feature tracking parameters
 # we have a KLT and descriptor based (KLT is better implemented...)
 use_klt: true
-num_pts:  150
-fast_threshold: 35
+num_pts:  300
+fast_threshold: 20
 grid_x: 11 #5
 grid_y: 10 #5
-min_px_dist: 20 #15
+min_px_dist: 15 #15
 knn_ratio: 0.70
 track_frequency: 31.0
 downsample_cameras: false
 num_opencv_threads: 2 # -1: auto, 0-1: serial, >1: number of threads
-histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
+histogram_method: "CLAHE" # NONE, HISTOGRAM, CLAHE
 
 # aruco tag tracker for the system
 # DICT_6X6_1000 from https://chev.me/arucogen/
