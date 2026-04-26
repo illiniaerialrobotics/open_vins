@@ -20,7 +20,7 @@ class OdomFrameTransformer:
         # Output: Robot Base pose in the Map (Mocap) frame
         self.pub = rospy.Publisher('/ov_msckf/odomimu_corrected', Odometry, queue_size=10)
         self.pub_pose = rospy.Publisher(
-            '/ov_msckf/poseimu_corrected', PoseStamped, queue_size=10
+            '/ov_msckf/poseimu_corrected', PoseWithCovarianceStamped, queue_size=10
         )
         
         rospy.loginfo("Transformer initialized. Mapping [world -> global -> imu -> base_link]")
