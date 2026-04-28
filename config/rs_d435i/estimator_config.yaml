@@ -1,6 +1,6 @@
 %YAML:1.0 # need to specify the file type at the top!
 
-verbosity: "WARNING" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
+verbosity: "ALL" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
 
 use_fej: true # if first-estimate Jacobians should be used (enable for good consistency)
 integration: "rk4" # discrete, rk4, analytical (if rk4 or analytical used then analytical covariance propagation is used)
@@ -8,12 +8,12 @@ use_stereo: true # if we have more than 1 camera, if we should try to track ster
 max_cameras: 2 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (all mono tracking)
 
 calib_cam_extrinsics: false
-calib_cam_intrinsics: true
-calib_cam_timeoffset: true
+calib_cam_intrinsics: false
+calib_cam_timeoffset: false
 calib_imu_intrinsics: false
 calib_imu_g_sensitivity: false
 
-max_clones: 11
+max_clones: 9
 max_slam: 40
 max_slam_in_update: 25
 max_msckf_in_update: 40
@@ -76,12 +76,12 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 # our front-end feature tracking parameters
 # we have a KLT and descriptor based (KLT is better implemented...)
 use_klt: true
-num_pts:  300
-fast_threshold: 20
-grid_x: 11 #5
+num_pts:  400
+fast_threshold: 10
+grid_x: 10 #5
 grid_y: 10 #5
-min_px_dist: 15 #15
-knn_ratio: 0.70
+min_px_dist: 10 #15
+knn_ratio: 0.70   # DOES NOTHING UNLESS KLT IS DISABLED
 track_frequency: 31.0
 downsample_cameras: false
 num_opencv_threads: 2 # -1: auto, 0-1: serial, >1: number of threads
@@ -98,14 +98,14 @@ downsize_aruco: true
 
 # camera noises and chi-squared threshold multipliers
 up_msckf_sigma_px: 1.5
-up_msckf_chi2_multipler: 1
+up_msckf_chi2_multipler: 2
 up_slam_sigma_px: 1.5
-up_slam_chi2_multipler: 1
+up_slam_chi2_multipler: 2
 up_aruco_sigma_px: 1
 up_aruco_chi2_multipler: 1
 
 # masks for our images
-use_mask: true
+use_mask: false
 mask0: masks/mask0.png
 mask1: masks/mask1.png
 
