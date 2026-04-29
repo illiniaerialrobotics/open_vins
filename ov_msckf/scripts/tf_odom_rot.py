@@ -3,7 +3,7 @@ import rospy
 import tf2_ros
 import tf2_geometry_msgs
 from nav_msgs.msg import Odometry
-from geometry_msgs.msg import PoseStamped, Vector3Stamped
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Vector3Stamped
 
 
 class OdomFrameTransformer:
@@ -25,10 +25,7 @@ class OdomFrameTransformer:
         self.pub_pose_cov = rospy.Publisher(
             '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
         )
-        self.pub_pose_cov = rospy.Publisher(
-            '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
-        )
-        
+
         rospy.loginfo("Transformer initialized. Mapping [world -> global -> imu -> base_link]")
 
     def callback(self, msg):
