@@ -22,6 +22,12 @@ class OdomFrameTransformer:
         self.pub_pose = rospy.Publisher(
             '/ov_msckf/poseimu_corrected', PoseStamped, queue_size=10
         )
+        self.pub_pose_cov = rospy.Publisher(
+            '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
+        )
+        self.pub_pose_cov = rospy.Publisher(
+            '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
+        )
         
         rospy.loginfo("Transformer initialized. Mapping [world -> global -> imu -> base_link]")
 
@@ -81,6 +87,11 @@ class OdomFrameTransformer:
             pose_out.header = out_msg.header
             pose_out.pose = out_msg.pose.pose
             self.pub_pose.publish(pose_out)
+
+            pose_cov_out = PoseWithCovarianceStamped()
+            pose_cov_out.header = out_msg.header
+            pose_cov_out.pose = out_msg.pose
+            self.pub_pose_cov.publish(pose_cov_out)
 
         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
             rospy.logwarn_throttle(5, "Waiting for TF chain [map -> global -> imu -> base_link]: %s" % str(e))
