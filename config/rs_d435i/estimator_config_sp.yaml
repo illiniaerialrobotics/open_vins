@@ -15,8 +15,8 @@ calib_imu_g_sensitivity: false
 
 max_clones: 11
 max_slam: 100
-max_slam_in_update: 25
-max_msckf_in_update: 40
+max_slam_in_update: 40
+max_msckf_in_update: 50
 dt_slam_delay: 2
 
 gravity_mag: 9.80665 # kalibr calibration
