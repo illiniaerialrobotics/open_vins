@@ -15,8 +15,8 @@ calib_imu_g_sensitivity: false
 
 max_clones: 11
 max_slam: 100
-max_slam_in_update: 30
-max_msckf_in_update: 40
+max_slam_in_update: 40
+max_msckf_in_update: 50
 dt_slam_delay: 2
 
 gravity_mag: 9.80665 # kalibr calibration
@@ -77,9 +77,9 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 # we have a KLT and descriptor based (KLT is better implemented...)
 use_klt: true
 num_pts:  800
-fast_threshold: 20
-grid_x: 5 #5
-grid_y: 5 #5
+fast_threshold: 15
+grid_x: 10 #5
+grid_y: 11 #5
 min_px_dist: 15 #15
 knn_ratio: 0.70   # DOES NOTHING UNLESS KLT IS DISABLED
 track_frequency: 31.0
@@ -98,9 +98,9 @@ downsize_aruco: true
 
 # camera noises and chi-squared threshold multipliers
 up_msckf_sigma_px: 1.5
-up_msckf_chi2_multipler: 2
+up_msckf_chi2_multipler: 1.5
 up_slam_sigma_px: 1.5
-up_slam_chi2_multipler: 2
+up_slam_chi2_multipler: 1.5
 up_aruco_sigma_px: 1
 up_aruco_chi2_multipler: 1
 

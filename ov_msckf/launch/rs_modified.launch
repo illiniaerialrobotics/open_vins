@@ -39,7 +39,9 @@
   /camera/stereo_module/auto_exposure_roi/top: 60
   /camera/stereo_module/auto_exposure_roi/bottom: 420
   /camera/stereo_module/auto_exposure_enabled: false
-  /camera/stereo_module/exposure: 8000
-  /camera/stereo_module/gain: 56
+  <!-- /camera/stereo_module/exposure: 8000
+  /camera/stereo_module/gain: 56 -->
+  /camera/stereo_module/exposure: 2000
+  /camera/stereo_module/gain: 16
   </rosparam>
 </launch>
