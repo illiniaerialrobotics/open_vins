@@ -20,10 +20,7 @@ class OdomFrameTransformer:
         # Output: Robot Base pose in the Map (Mocap) frame
         self.pub = rospy.Publisher('/ov_msckf/odomimu_corrected', Odometry, queue_size=10)
         self.pub_pose = rospy.Publisher(
-            '/ov_msckf/poseimu_corrected', PoseWithCovarianceStamped, queue_size=10
-        )
-        self.pub_pose_cov = rospy.Publisher(
-            '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
+            '/ov_msckf/poseimu_corrected', PoseStamped, queue_size=10
         )
         self.pub_pose_cov = rospy.Publisher(
             '/ov_msckf/poseimu_corrected_cov', PoseWithCovarianceStamped, queue_size=10
@@ -83,9 +80,9 @@ class OdomFrameTransformer:
 
             self.pub.publish(out_msg)
 
-            pose_out = PoseWithCovarianceStamped()
+            pose_out = PoseStamped()
             pose_out.header = out_msg.header
-            pose_out.pose = out_msg.pose
+            pose_out.pose = out_msg.pose.pose
             self.pub_pose.publish(pose_out)
 
             pose_cov_out = PoseWithCovarianceStamped()
