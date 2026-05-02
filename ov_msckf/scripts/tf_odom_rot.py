@@ -105,11 +105,11 @@ class OdomFrameTransformer:
                 v_lin_g.vector = lin_vec
                 lin_vec = tf2_geometry_msgs.do_transform_vector3(v_lin_g, rot_tf).vector
 
-                v_ang_g = Vector3Stamped()
-                v_ang_g.header.frame_id = "base_link"
-                v_ang_g.header.stamp = msg.header.stamp
-                v_ang_g.vector = ang_vec
-                ang_vec = tf2_geometry_msgs.do_transform_vector3(v_ang_g, rot_tf).vector
+                # v_ang_g = Vector3Stamped()
+                # v_ang_g.header.frame_id = "base_link"
+                # v_ang_g.header.stamp = msg.header.stamp
+                # v_ang_g.vector = ang_vec
+                # ang_vec = tf2_geometry_msgs.do_transform_vector3(v_ang_g, rot_tf).vector
 
                 R = tft.quaternion_matrix([q.x, q.y, q.z, q.w])[:3, :3]
                 T6 = np.zeros((6, 6))
