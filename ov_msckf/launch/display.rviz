@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /Image Tracks1
       Splitter Ratio: 0.6011396050453186
     Tree Height: 352
   - Class: rviz/Selection
@@ -24,7 +25,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: Image Tracks
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -57,15 +58,29 @@ Visualization Manager:
       Frame Timeout: 120
       Frames:
         All Enabled: true
-        cam0:
+        base_link:
+          Value: true
+        camera_accel_frame:
+          Value: true
+        camera_accel_optical_frame:
+          Value: true
+        camera_gyro_frame:
+          Value: true
+        camera_imu_optical_frame:
+          Value: true
+        camera_infra1_frame:
+          Value: true
+        camera_infra1_optical_frame:
+          Value: true
+        camera_infra2_frame:
+          Value: true
+        camera_infra2_optical_frame:
+          Value: true
+        camera_link:
           Value: true
         camera_odom_frame:
           Value: true
-        global:
-          Value: true
         imu:
-          Value: true
-        kingfisher:
           Value: true
         vicon:
           Value: true
@@ -78,14 +93,24 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
+        camera_link:
+          camera_accel_frame:
+            camera_accel_optical_frame:
+              {}
+          camera_gyro_frame:
+            camera_imu_optical_frame:
+              {}
+          camera_infra1_frame:
+            camera_infra1_optical_frame:
+              {}
+          camera_infra2_frame:
+            camera_infra2_optical_frame:
+              {}
+        imu:
+          base_link:
+            {}
         world:
           camera_odom_frame:
-            {}
-          global:
-            imu:
-              cam0:
-                {}
-          kingfisher:
             {}
           vicon:
             {}
@@ -100,7 +125,7 @@ Visualization Manager:
       Name: Image Tracks
       Normalize Range: true
       Queue Size: 2
-      Transport Hint: compressed
+      Transport Hint: raw
       Unreliable: false
       Value: true
     - Class: rviz/Image
@@ -412,7 +437,7 @@ Visualization Manager:
   Global Options:
     Background Color: 44; 44; 44
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: global
     Frame Rate: 60
   Name: root
   Tools:
@@ -476,5 +501,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1281
-  X: 324
-  Y: 35
+  X: 260
+  Y: -29
