@@ -20,7 +20,7 @@ class OdomFrameTransformer:
         # Input: OpenVINS providing IMU pose in Global frame
         self.sub = rospy.Subscriber('/ov_msckf/odomimu', Odometry, self.callback)
         # Output: Robot Base pose in the Map (Mocap) frame
-        self.pub = rospy.Publisher('/ov_msckf/odomimu_corrected_WORLD', Odometry, queue_size=10)
+        self.pub = rospy.Publisher('/ov_msckf/odomimu_corrected', Odometry, queue_size=10)
         self.pub_pose = rospy.Publisher(
             '/ov_msckf/poseimu_corrected', PoseWithCovarianceStamped, queue_size=10
         )
