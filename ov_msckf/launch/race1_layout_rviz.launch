@@ -1,0 +1,17 @@
+<launch>
+  <arg name="frame_id" default="map" />
+  <arg name="marker_topic" default="/race1_layout_markers" />
+  <arg name="layout_yaml" default="$(find ov_msckf)/config/race1_layout.yaml" />
+  <arg name="rviz_config" default="$(find ov_msckf)/launch/display.rviz" />
+  <arg name="launch_rviz" default="true" />
+
+  <node pkg="ov_msckf" type="race1_layout_rviz_node.py" name="race1_layout_rviz" output="screen">
+    <param name="layout_yaml" value="$(arg layout_yaml)" />
+    <param name="frame_id" value="$(arg frame_id)" />
+    <param name="marker_topic" value="$(arg marker_topic)" />
+  </node>
+
+  <group if="$(arg launch_rviz)">
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_config)" />
+  </group>
+</launch>

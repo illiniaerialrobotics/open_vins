@@ -33,7 +33,8 @@ class OdomFrameTransformer:
             transform = self.tf_buffer.lookup_transform(
                 "global",                # Target: Where we want the pose (Ground Truth World)
                 "base_link",          # Source: The frame we want to track (Robot Center)
-                rospy.Time(0),     # Synchronize with the Odom timestamp
+                # rospy.Time(0),     # Synchronize with the Odom timestamp
+                msg.header.stamp,
                 rospy.Duration(0.1)
             )
 

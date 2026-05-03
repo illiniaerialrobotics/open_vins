@@ -132,10 +132,15 @@ if (catkin_FOUND AND ENABLE_ROS)
             DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
     )
 
+    install(DIRECTORY config/
+            DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config
+    )
+
     catkin_install_python(PROGRAMS
             scripts/mocap_rot.py
             scripts/tf_odom_rot.py
             scripts/odom_mocap_rot.py
+            scripts/race1_layout_rviz_node.py
             DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 

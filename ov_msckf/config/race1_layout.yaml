@@ -1,0 +1,107 @@
+# race1 gate positions and trajectory endpoints.
+# Coordinates: FLU body frame relative to the drone boot position.
+#   X = drone-boot heading (forward)
+#   Y = drone-boot left
+#   Z = up   (gate bottoms at Z=0, drone boot at Z=0)
+# All distances in metres.
+
+coordinate_system:
+  x: drone boot heading (forward)
+  y: drone boot left
+  z: up
+units: metres
+
+start:
+  position: [0.0, 0.0, 1.0668]
+  description: drone boot, at hover height (= single-gate opening Z)
+
+end:
+  position: [-12.8128, 5.5514, 1.0668]
+  description: 1 m past G03_DOWN along the gate normal (drone exits going -x)
+
+gate_spec:
+  opening_height_m: 1.524
+  border_height_m:  0.3048
+  outer_width_m:    2.1336
+  single_opening_z: 1.0668
+  double_lower_z:   1.0668
+  double_upper_z:   2.8956
+
+sequence:
+  - id: G09
+    type: single
+    position: [5.2608, -0.2396, 1.0668]
+    drone_pass_direction: +x
+    bottom_corners:
+      left:  [5.2608,  0.8274, 0.0]
+      right: [5.2608, -1.3066, 0.0]
+
+  - id: G08_DOWN
+    type: double_lower
+    position: [3.2798, 9.8184, 1.0668]
+    drone_pass_direction: -x
+    bottom_corners:
+      left:  [3.2798, 10.8854, 0.0]
+      right: [3.2798,  8.7514, 0.0]
+
+  - id: G01
+    type: single
+    position: [-11.8072, 9.8184, 1.0668]
+    drone_pass_direction: -x
+    bottom_corners:
+      left:  [-11.8072, 10.8854, 0.0]
+      right: [-11.8072,  8.7514, 0.0]
+
+  - id: G02
+    type: single
+    position: [-11.8072, 7.6854, 1.0668]
+    drone_pass_direction: +x
+    bottom_corners:
+      left:  [-11.8072, 8.7524, 0.0]
+      right: [-11.8072, 6.6184, 0.0]
+
+  - id: G04
+    type: single
+    position: [-5.1022, 7.3804, 1.0668]
+    drone_pass_direction: +x
+    bottom_corners:
+      left:  [-5.1022, 8.4474, 0.0]
+      right: [-5.1022, 6.3134, 0.0]
+
+  - id: G07
+    type: single
+    position: [0.3848, 3.1134, 1.0668]
+    drone_pass_direction: -x
+    bottom_corners:
+      left:  [0.3848, 4.1804, 0.0]
+      right: [0.3848, 2.0464, 0.0]
+
+  - id: G06
+    type: single
+    position: [-5.1022, 3.1134, 1.0668]
+    drone_pass_direction: -x
+    bottom_corners:
+      left:  [-5.1022, 4.1804, 0.0]
+      right: [-5.1022, 2.0464, 0.0]
+
+  - id: G03_DOWN
+    type: double_lower
+    position: [-11.8072, 5.5514, 1.0668]
+    drone_pass_direction: -x
+    bottom_corners:
+      left:  [-11.8072, 6.6184, 0.0]
+      right: [-11.8072, 4.4844, 0.0]
+
+path_summary:
+  arclength_m: 77.67
+  total_gates: 8
+  u_turns:
+    - between: [G01, G02]
+      type: tight semicircle bulging -x
+      radius_m: 1.065
+    - between: [G04, G07]
+      type: medium semicircle bulging +x with east extension
+      radius_m: 2.135
+    - between: [G09, G08_DOWN]
+      type: long swing bulging +x
+      radius_m: 3.5

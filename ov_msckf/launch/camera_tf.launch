@@ -1,32 +1,17 @@
 <launch>
-<<<<<<< HEAD
-  <!-- Args forwarded to subscribe.launch (defaults match subscribe.launch). -->
-  <arg name="verbosity" default="INFO"/>
-  <arg name="config" default="rs_d435i"/>
-=======
   <!-- OpenVINS subscribe node + imu/base_link extrinsics + odom frame transformer -->
   <arg name="config" default="rs_d435i"/>
   <arg name="verbosity" default="INFO"/>
->>>>>>> 60196cadf125ae1d5853e230f89442941608f694
   <arg name="max_cameras" default="2"/>
   <arg name="use_stereo" default="true"/>
   <arg name="dobag" default="false"/>
 
   <include file="$(find ov_msckf)/launch/subscribe.launch">
-<<<<<<< HEAD
-    <arg name="verbosity" value="$(arg verbosity)"/>
-    <arg name="config" value="$(arg config)"/>
-=======
     <arg name="config" value="$(arg config)"/>
     <arg name="verbosity" value="$(arg verbosity)"/>
->>>>>>> 60196cadf125ae1d5853e230f89442941608f694
     <arg name="max_cameras" value="$(arg max_cameras)"/>
     <arg name="use_stereo" value="$(arg use_stereo)"/>
     <arg name="dobag" value="$(arg dobag)"/>
   </include>
-<<<<<<< HEAD
-  <include file="$(find ov_msckf)/launch/vio_tf_static_odom.launch"/>
-=======
   <include file="$(find ov_msckf)/launch/vio_tf_static_odom.launch" />
->>>>>>> 60196cadf125ae1d5853e230f89442941608f694
 </launch>
