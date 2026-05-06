@@ -113,7 +113,7 @@ def main() -> None:
 
     default_layout = str(Path(__file__).with_name("race1_layout.yaml"))
     layout_yaml = rospy.get_param("~layout_yaml", default_layout)
-    frame_id = rospy.get_param("~frame_id", "map")
+    frame_id = rospy.get_param("~frame_id", "global")
     topic = rospy.get_param("~marker_topic", "/race1_layout_markers")
     publish_hz = float(rospy.get_param("~publish_hz", 1.0))
 

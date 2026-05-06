@@ -1,5 +1,5 @@
 <launch>
-  <arg name="frame_id" default="map" />
+  <arg name="frame_id" default="global" />
   <arg name="marker_topic" default="/race1_layout_markers" />
   <arg name="layout_yaml" default="$(find ov_msckf)/config/race1_layout.yaml" />
   <arg name="rviz_config" default="$(find ov_msckf)/launch/display.rviz" />

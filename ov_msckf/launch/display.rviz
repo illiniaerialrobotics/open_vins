@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Image Tracks1
+        - /MarkerArray1
       Splitter Ratio: 0.6011396050453186
     Tree Height: 426
   - Class: rviz/Selection
@@ -25,7 +26,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: ACTIVE Features
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -58,44 +59,6 @@ Visualization Manager:
       Frame Timeout: 120
       Frames:
         All Enabled: true
-        base_link:
-          Value: true
-        cam0:
-          Value: true
-        cam1:
-          Value: true
-        camera_accel_frame:
-          Value: true
-        camera_accel_optical_frame:
-          Value: true
-        camera_color_frame:
-          Value: true
-        camera_color_optical_frame:
-          Value: true
-        camera_gyro_frame:
-          Value: true
-        camera_imu_optical_frame:
-          Value: true
-        camera_infra1_frame:
-          Value: true
-        camera_infra1_optical_frame:
-          Value: true
-        camera_infra2_frame:
-          Value: true
-        camera_infra2_optical_frame:
-          Value: true
-        camera_link:
-          Value: true
-        camera_odom_frame:
-          Value: true
-        global:
-          Value: true
-        imu:
-          Value: true
-        vicon:
-          Value: true
-        world:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -103,35 +66,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        camera_link:
-          camera_accel_frame:
-            camera_accel_optical_frame:
-              {}
-          camera_color_frame:
-            camera_color_optical_frame:
-              {}
-          camera_gyro_frame:
-            camera_imu_optical_frame:
-              {}
-          camera_infra1_frame:
-            camera_infra1_optical_frame:
-              {}
-          camera_infra2_frame:
-            camera_infra2_optical_frame:
-              {}
-        global:
-          imu:
-            base_link:
-              {}
-            cam0:
-              {}
-            cam1:
-              {}
-        world:
-          camera_odom_frame:
-            {}
-          vicon:
-            {}
+        {}
       Update Interval: 0
       Value: true
     - Class: rviz/Image
@@ -475,6 +410,14 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: false
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /race1_layout_markers
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 44; 44; 44
@@ -503,7 +446,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.614479064941406
+      Distance: 18.977277755737305
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -519,9 +462,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6753989458084106
+      Pitch: 0.5903990268707275
       Target Frame: <Fixed Frame>
-      Yaw: 2.730405330657959
+      Yaw: 3.4404056072235107
     Saved: ~
 Window Geometry:
   Current Depths:
