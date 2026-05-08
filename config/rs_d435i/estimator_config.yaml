@@ -14,9 +14,9 @@ calib_imu_intrinsics: false
 calib_imu_g_sensitivity: false
 
 max_clones: 11
-max_slam: 100
-max_slam_in_update: 30
-max_msckf_in_update: 40
+max_slam: 90
+max_slam_in_update: 35
+max_msckf_in_update: 45
 dt_slam_delay: 2
 
 gravity_mag: 9.80665 # kalibr calibration
@@ -76,10 +76,10 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 # our front-end feature tracking parameters
 # we have a KLT and descriptor based (KLT is better implemented...)
 use_klt: true
-num_pts:  800
-fast_threshold: 20
-grid_x: 5 #5
-grid_y: 5 #5
+num_pts:  600
+fast_threshold: 10
+grid_x: 10 #5
+grid_y: 10 #5
 min_px_dist: 15 #15
 knn_ratio: 0.70   # DOES NOTHING UNLESS KLT IS DISABLED
 track_frequency: 31.0

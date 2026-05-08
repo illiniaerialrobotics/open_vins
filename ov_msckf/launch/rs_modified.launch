@@ -4,7 +4,7 @@
     <arg name="enable_infra1"       value="true"/>
     <arg name="enable_infra2"       value="true"/>
     <arg name="enable_depth"        value="false"/>
-    <arg name="enable_color"        value="true"/>
+    <arg name="enable_color"        value="false"/>
     
     <arg name="enable_gyro"         value="true"/>
     <arg name="enable_accel"        value="true"/>
@@ -14,13 +14,19 @@
     <arg name="stereo_module/gain/1"      default="16"/>
     <arg name="stereo_module/exposure/2"  default="2000"/>
     <arg name="stereo_module/gain/2"      default="16"/>
+
+    <arg name="infra_width"         default="848"/>
+    <arg name="infra_height"        default="480"/>
+
+    <arg name="color_width"         default="640"/>
+    <arg name="color_height"        default="480"/>
   
     <arg name="fisheye_fps"         default="-1"/>
     <arg name="depth_fps"           default="-1"/>
     <arg name="infra_fps"           default="30"/>
     <arg name="color_fps"           default="-1"/>
     <arg name="gyro_fps"            default="200"/>
-    <arg name="accel_fps"           default="100"/>
+    <arg name="accel_fps"           default="200"/>
     
     <arg name="enable_sync"         value="true"/>
 
@@ -32,5 +38,10 @@
   /camera/stereo_module/auto_exposure_roi/right: 560
   /camera/stereo_module/auto_exposure_roi/top: 60
   /camera/stereo_module/auto_exposure_roi/bottom: 420
+  /camera/stereo_module/auto_exposure_enabled: false
+  <!-- /camera/stereo_module/exposure: 8000
+  /camera/stereo_module/gain: 56 -->
+  /camera/stereo_module/exposure: 2000
+  /camera/stereo_module/gain: 16
   </rosparam>
 </launch>
