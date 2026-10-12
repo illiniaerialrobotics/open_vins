@@ -39,7 +39,7 @@ def load_poses_from_bag(path):
         p = m.pose.pose.position
         P.append([p.x, p.y, p.z])
         v = m.twist.twist.linear
-        V.append(math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z))
+        V.append([v.x, v.y, v.z])          # OpenVINS odomimu: linear velocity in the body (IMU) frame
         q = m.pose.pose.orientation
         Q.append([q.x, q.y, q.z, q.w])
     bag.close()
@@ -55,9 +55,23 @@ def load_poses_from_txt(path):
     if d.ndim != 2 or len(d) < 2:
         return None
     T, P = d[:, 0], d[:, 1:4]
-    V = np.r_[0.0, np.linalg.norm(np.diff(P, axis=0), axis=1) / np.maximum(np.diff(T), 1e-3)]
     Q = d[:, 4:8] if d.shape[1] >= 8 else None
+    # body-frame velocity from smoothed finite differences (0.2 s window), rotated by R^T
+    vw = np.gradient(P, axis=0) / np.maximum(np.gradient(T), 1e-3)[:, None]
+    w = max(1, int(0.2 / max(np.median(np.diff(T)), 1e-3)))
+    k = np.ones(w) / w
+    vw = np.stack([np.convolve(vw[:, c], k, mode="same") for c in range(3)], axis=1)
+    V = vw
+    if Q is not None:
+        V = np.array([quat_to_R(q).T @ vw[i] for i, q in enumerate(Q)])
     return T, P, V, None, Q  # no receive times in a text trajectory
+
+
+def quat_to_R(q):
+    x, y, z, w = q
+    return np.array([[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+                     [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+                     [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]])
 
 
 def quat_to_rpy(Q):
@@ -203,7 +217,7 @@ def main():
     poses = load_poses_from_bag(args.viz_bag) or load_poses_from_txt(args.traj)
     if poses is None:
         print("no poses found (no /ov_msckf/odomimu in viz bag and no usable --traj); the inset will say so")
-    T, P, V, Trecv, Q = poses if poses else (np.zeros(0), np.zeros((0, 3)), np.zeros(0), None, None)
+    T, P, V, Trecv, Q = poses if poses else (np.zeros(0), np.zeros((0, 3)), np.zeros((0, 3)), None, None)
     rpy_v = quat_to_rpy(Q) if Q is not None and len(Q) else None
     # express the trajectory in a world frame with origin + heading at the first pose (OpenVINS's
     # global yaw is arbitrary), so the inset's +x is the initial camera direction
@@ -261,8 +275,10 @@ def main():
         # text overlay (one decimal everywhere)
         lines = ["t = %.1f s   %s" % (ts - t0, kind)]
         if cur is not None:
-            sp = V[k - 1] if len(V) == len(T) else 0.0
-            lines.append("pos x %+.1f  y %+.1f  z %+.1f m   speed %.1f m/s" % (cur[0], cur[1], cur[2], sp))
+            vb = V[k - 1] if len(V) == len(T) else np.zeros(3)
+            sp = float(np.linalg.norm(vb))
+            lines.append("pos x %+.1f  y %+.1f  z %+.1f m   speed %.1f m/s   (world: x = initial heading)" % (cur[0], cur[1], cur[2], sp))
+            lines.append("vel body vx %+.1f  vy %+.1f  vz %+.1f m/s   (x fwd, y left, z up)" % (vb[0], vb[1], vb[2]))
             if rpy_v is not None:
                 r, pch, yw = np.degrees(signs * rpy_v[k - 1] + offs)
                 lines.append("VIO roll %+.1f  pitch %+.1f  yaw %+.1f deg" % (r, pch, wrap_deg(yw)))
