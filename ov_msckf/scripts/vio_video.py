@@ -164,7 +164,7 @@ class TrajInset:
             cv2.line(self.canvas, (u, 0), (u, self.size), (55, 55, 55), 1)
             cv2.line(self.canvas, (0, v), (self.size, v), (55, 55, 55), 1)
         cv2.putText(self.canvas, "grid %g m" % step, (6, self.size - 6), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (160, 160, 160), 1, cv2.LINE_AA)
-        cv2.putText(self.canvas, "top view x->, y^", (6, 14), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (160, 160, 160), 1, cv2.LINE_AA)
+        cv2.putText(self.canvas, "top view, x = initial heading ->, y left ^", (6, 14), cv2.FONT_HERSHEY_SIMPLEX, 0.38, (160, 160, 160), 1, cv2.LINE_AA)
 
     def to_px(self, x, y):
         u = int(round(self.size / 2 + (x - self.cx) * self.ppm))
@@ -205,6 +205,14 @@ def main():
         print("no poses found (no /ov_msckf/odomimu in viz bag and no usable --traj); the inset will say so")
     T, P, V, Trecv, Q = poses if poses else (np.zeros(0), np.zeros((0, 3)), np.zeros(0), None, None)
     rpy_v = quat_to_rpy(Q) if Q is not None and len(Q) else None
+    # express the trajectory in a world frame with origin + heading at the first pose (OpenVINS's
+    # global yaw is arbitrary), so the inset's +x is the initial camera direction
+    if len(P) > 1 and rpy_v is not None:
+        yaw0 = rpy_v[0, 2]
+        c, s_ = math.cos(-yaw0), math.sin(-yaw0)
+        Rw = np.array([[c, -s_, 0], [s_, c, 0], [0, 0, 1]])
+        P = (P - P[0]) @ Rw.T
+        rpy_v = rpy_v.copy(); rpy_v[:, 2] = rpy_v[:, 2] - yaw0
     att = load_attitude(args.bag)
     signs, offs = (fit_vio_to_fc(T, rpy_v, att[0], att[2]) if (att is not None and rpy_v is not None) else (np.ones(3), np.zeros(3)))
     if att is not None:
