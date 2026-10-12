@@ -26,6 +26,9 @@ declare -A VAR=(
   [num_pts_150]="s/^num_pts: 200.*/num_pts: 150/"
   [init_static_only]="s/^init_dyn_use: true.*/init_dyn_use: false/"
   [init_reccond_1e-12]="s/^init_dyn_min_rec_cond: 1e-20/init_dyn_min_rec_cond: 1e-12/"
+  [init_reccond_r2]="s/^init_dyn_min_rec_cond: 1e-20/init_dyn_min_rec_cond: 1e-12/"
+  [init_reccond_r3]="s/^init_dyn_min_rec_cond: 1e-20/init_dyn_min_rec_cond: 1e-12/"
+  [init_reccond_r4]="s/^init_dyn_min_rec_cond: 1e-20/init_dyn_min_rec_cond: 1e-12/"
   [init_mindeg_15]="s/^init_dyn_min_deg: 10.0/init_dyn_min_deg: 15.0/"
 )
 [ $# -gt 0 ] && LIST=("$@") || LIST=(base init_static_only init_reccond_1e-12 init_mindeg_15 noise_half noise_double zupt_always clones_11 clones_20 fix_intrinsics fix_all_calib fast_10 fast_20 clahe track_20hz sigma_1.0 sigma_2.0 slam_25 slam_100 num_pts_150)

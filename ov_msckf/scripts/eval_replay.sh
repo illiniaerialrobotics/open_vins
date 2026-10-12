@@ -38,7 +38,10 @@ sed -i 's/\x1b\[[0-9;]*m//g' "$LOG"
 # rosbag play ending normally also shows as "REQUIRED process has died" (exit code 0); only a non-zero exit is an error
 if grep -aE "process has died \[pid [0-9]+, exit code [1-9]" "$LOG" | grep -q "rosbag/play"; then echo "ERROR: rosbag play failed (see $LOG)"; exit 2; fi
 NSF=$(grep -ac 'failed static init' "$LOG"); NDY=$(grep -ac 'disparity is' "$LOG")
-if grep -aq 'successful initialization' "$LOG"; then MODE="dynamic"; elif [ -s "$EST" ]; then MODE="static"; else MODE="none"; fi
+# both initializers print "successful initialization"; dynamic init is preceded by its "disparity is" attempts
+if grep -aq 'successful initialization' "$LOG"; then
+  if grep -a -B6 'successful initialization' "$LOG" | grep -aq 'disparity is'; then MODE="dynamic"; else MODE="static"; fi
+elif [ -s "$EST" ]; then MODE="static"; else MODE="none"; fi
 echo "init: $MODE ($NSF static-init failures, $NDY dynamic-init attempts)"
 echo "warnings: out-of-order images $(grep -aci 'out of order' "$LOG"), backward time $(grep -aci 'went backward' "$LOG")"
 python3 "$SCRIPT_DIR/traj_metrics.py" "$BAG" "$EST"
