@@ -278,7 +278,16 @@ def main():
             vb = V[k - 1] if len(V) == len(T) else np.zeros(3)
             sp = float(np.linalg.norm(vb))
             lines.append("pos x %+.1f  y %+.1f  z %+.1f m   speed %.1f m/s   (world: x = initial heading)" % (cur[0], cur[1], cur[2], sp))
-            lines.append("vel body vx %+.1f  vy %+.1f  vz %+.1f m/s   (x fwd, y left, z up)" % (vb[0], vb[1], vb[2]))
+            # velocity in the LEVEL heading frame (forward/left/up, gravity-level): what a person expects.
+            # The raw body-frame velocity tilts with the drone (a 20 deg nose-down carry puts 35 % of
+            # the forward speed into body vz), so it is not shown here.
+            if rpy_v is not None and Q is not None:
+                R_b = quat_to_R(Q[k - 1]); v_w = R_b @ vb
+                yw = math.atan2(R_b[1, 0], R_b[0, 0]); c_, s_ = math.cos(-yw), math.sin(-yw)
+                vh = np.array([[c_, -s_, 0], [s_, c_, 0], [0, 0, 1]]) @ v_w
+                lines.append("vel fwd %+.1f  left %+.1f  up %+.1f m/s   (level heading frame)" % (vh[0], vh[1], vh[2]))
+            else:
+                lines.append("vel body vx %+.1f  vy %+.1f  vz %+.1f m/s" % (vb[0], vb[1], vb[2]))
             if rpy_v is not None:
                 r, pch, yw = np.degrees(signs * rpy_v[k - 1] + offs)
                 lines.append("VIO roll %+.1f  pitch %+.1f  yaw %+.1f deg" % (r, pch, wrap_deg(yw)))
