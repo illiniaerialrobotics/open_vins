@@ -6,8 +6,9 @@ OpenVINS's "global" frame is gravity aligned (z up) but its yaw is arbitrary (bu
 alone; on the bench it came out 180 deg from the initial camera direction, and it changes with the
 tilt at initialisation). This node defines
     world := pose of the IMU at the first message, yaw only (origin there, +x = heading, z up)
-and publishes /ov_msckf/odomimu (IMU frame) as ~odom_world (frame "world", child "imu"), plus the
-static TF world -> global. Position, velocity (world frame) and covariance are rotated accordingly.
+and publishes /ov_msckf/odomimu as ~odom_world (frame "world", child "imu"), plus the static TF
+world -> global. Position/orientation/covariance are rotated into world; the twist stays in the body
+(IMU) frame as in nav_msgs convention: forward motion is always +vx.
 Optional ~yaw_offset_deg rotates the world further (e.g. if the camera is not along the airframe nose).
 """
 import math
@@ -80,11 +81,10 @@ class WorldAlign:
         out.child_frame_id = m.child_frame_id or "imu"
         out.pose.pose.position.x, out.pose.pose.position.y, out.pose.pose.position.z = pw
         out.pose.pose.orientation.x, out.pose.pose.orientation.y, out.pose.pose.orientation.z, out.pose.pose.orientation.w = qw
-        # OpenVINS odomimu twist: linear in the IMU frame, angular in the IMU frame -> keep angular, give linear in world
-        v = np.array([m.twist.twist.linear.x, m.twist.twist.linear.y, m.twist.twist.linear.z])
-        vw = R_WI @ v
-        out.twist.twist.linear.x, out.twist.twist.linear.y, out.twist.twist.linear.z = vw
-        out.twist.twist.angular = m.twist.twist.angular
+        # twist follows the nav_msgs convention: expressed in the child (IMU/body) frame, exactly as
+        # OpenVINS publishes it. Moving along the camera direction is therefore always +vx,
+        # whatever the heading; position axes are the fixed world axes defined at the first pose.
+        out.twist.twist = m.twist.twist
         C = np.array(m.pose.covariance).reshape(6, 6)
         T6 = np.zeros((6, 6)); T6[:3, :3] = self.R_WG; T6[3:, 3:] = self.R_WG
         out.pose.covariance = (T6 @ C @ T6.T).ravel().tolist()
