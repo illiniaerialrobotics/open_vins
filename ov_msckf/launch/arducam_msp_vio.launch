@@ -46,6 +46,11 @@
   <node pkg="tf2_ros" type="static_transform_publisher" name="imu_base_link_static"
         args="$(arg imu_base_link_tf) imu base_link"/>
   <node pkg="ov_msckf" type="tf_odom_rot.py" name="odom_frame_transformer" output="screen"/>
+  <!-- world frame with a defined heading: origin + yaw of the IMU at the first pose, z up.
+       Output /vio_world_align/odom_world (frame world, child imu) and the static TF world->global. -->
+  <node pkg="ov_msckf" type="vio_world_align.py" name="vio_world_align" output="screen">
+    <param name="yaw_offset_deg" value="0.0"/>
+  </node>
   <group if="$(arg rviz)">
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(find ov_msckf)/launch/display.rviz"/>
   </group>
