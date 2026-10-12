@@ -24,11 +24,17 @@ declare -A VAR=(
   [slam_25]="s/^max_slam: 50/max_slam: 25/"
   [slam_100]="s/^max_slam: 50/max_slam: 100/"
   [num_pts_150]="s/^num_pts: 200.*/num_pts: 150/"
+  [init_static_only]="s/^init_dyn_use: true.*/init_dyn_use: false/"
+  [init_reccond_1e-12]="s/^init_dyn_min_rec_cond: 1e-20/init_dyn_min_rec_cond: 1e-12/"
+  [init_mindeg_15]="s/^init_dyn_min_deg: 10.0/init_dyn_min_deg: 15.0/"
 )
-[ $# -gt 0 ] && LIST=("$@") || LIST=(base noise_half noise_double zupt_always clones_11 clones_20 fix_intrinsics fix_all_calib fast_10 fast_20 clahe track_20hz sigma_1.0 sigma_2.0 slam_25 slam_100 num_pts_150)
-echo "| variant | init | path m | touchdown err m (%) | final err m | drift on floor m | roll RMS | pitch RMS | yaw RMS | ms/frame |" > "$OUT"
-echo "|---|---|---|---|---|---|---|---|---|---|" >> "$OUT"
+[ $# -gt 0 ] && LIST=("$@") || LIST=(base init_static_only init_reccond_1e-12 init_mindeg_15 noise_half noise_double zupt_always clones_11 clones_20 fix_intrinsics fix_all_calib fast_10 fast_20 clahe track_20hz sigma_1.0 sigma_2.0 slam_25 slam_100 num_pts_150)
+if [ ! -s "$OUT" ]; then
+  echo "| variant | init | path m | touchdown err m (%) | final err m | drift on floor m | roll RMS | pitch RMS | yaw RMS | ms/frame |" > "$OUT"
+  echo "|---|---|---|---|---|---|---|---|---|---|" >> "$OUT"
+fi
 for v in "${LIST[@]}"; do
+  grep -q "^| $v |" "$OUT" && { echo "skip $v (already in table)"; continue; }
   D="$S/cfg_$v"; rm -rf "$D"; cp -r "$SRC" "$D"
   if [ -n "${VAR[$v]:-}" ]; then sed -i "${VAR[$v]}" "$D/estimator_config.yaml" "$D/imu.yaml"; fi
   EST="/tmp/traj_${N}.txt"; TIM="$S/timing_${v}.txt"
@@ -36,7 +42,7 @@ for v in "${LIST[@]}"; do
   INIT=$(echo "$R" | sed -n 's/^init: \([a-z]*\).*/\1/p')
   PATHM=$(echo "$R" | sed -n 's/^path length \([0-9.]*\) m.*/\1/p')
   FINAL=$(echo "$R" | sed -n 's/^path length .*start->end \([0-9.]*\) m.*/\1/p')
-  TD=$(echo "$R" | sed -n 's/^at touchdown.*start->end \([0-9.]*\) m (\([0-9.]*\) %.*/\1 (\2)/p'); [ -z "$TD" ] && TD="n/a"
+  TD=$(echo "$R" | sed -n 's/^at touchdown.*start->end \([0-9.]*\) m (\([0-9.]*\) % of.*/\1 (\2)/p'); [ -z "$TD" ] && TD="n/a"
   DRIFT=$(echo "$R" | sed -n 's/^at touchdown.*afterwards \([0-9.]*\) m.*/\1/p'); [ -z "$DRIFT" ] && DRIFT="-"
   ATT=$(python3 "$SCR/compare_attitude.py" --bag "$BAG" --traj "$EST" 2>/dev/null | sed -n 's/.*\(roll\|pitch\|yaw\) .*RMS diff \([0-9.]*\) deg.*/\2/p' | tr '\n' ' ')
   MS=$(python3 -c "import numpy as np; d=np.loadtxt('$TIM',comments='#',delimiter=','); print('%.1f'%(d[:,-1].mean()*1e3))" 2>/dev/null || echo "-")

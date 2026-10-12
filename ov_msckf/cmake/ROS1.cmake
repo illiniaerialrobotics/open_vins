@@ -144,6 +144,7 @@ if (catkin_FOUND AND ENABLE_ROS)
             scripts/vio_video.py
             scripts/compare_attitude.py
             scripts/md2pdf.py
+            scripts/traj_metrics.py
             DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 
