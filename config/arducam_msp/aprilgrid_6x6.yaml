@@ -1,0 +1,9 @@
+# Kalibr stock A0 AprilGrid 6x6 (https://github.com/ethz-asl/kalibr/wiki/downloads)
+# tagSize    = outer edge of one BLACK square [m]
+# tagSpacing = gap between neighbouring black squares / tagSize  (2.64 cm / 8.8 cm = 0.3)
+# Verify with a ruler before recording: black square 8.8 cm, gap 2.64 cm, whole grid ~66 cm.
+target_type: 'aprilgrid'
+tagCols: 6
+tagRows: 6
+tagSize: 0.088
+tagSpacing: 0.3

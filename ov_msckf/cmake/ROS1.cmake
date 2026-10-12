@@ -136,6 +136,14 @@ if (catkin_FOUND AND ENABLE_ROS)
             scripts/mocap_rot.py
             scripts/tf_odom_rot.py
             scripts/odom_mocap_rot.py
+            scripts/arducam_node.py
+            scripts/imu_check.py
+            scripts/check_sync.py
+            scripts/imu_link_monitor.py
+            scripts/eval_replay.sh
+            scripts/vio_video.py
+            scripts/compare_attitude.py
+            scripts/md2pdf.py
             DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
     )
 

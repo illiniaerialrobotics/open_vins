@@ -1,0 +1,119 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+# OpenVINS mono VIO: Arducam OV9782 (640x400 mono8 @ 30 Hz) + Betaflight FC IMU over MSP (200 Hz).
+# Derived from config/rs_d435i/estimator_config.yaml and the Oct 2025 a2rl mono config.
+
+verbosity: "INFO" # ALL, DEBUG, INFO, WARNING, ERROR, SILENT
+
+use_fej: true # if first-estimate Jacobians should be used (enable for good consistency)
+integration: "rk4" # discrete, rk4, analytical (if rk4 or analytical used then analytical covariance propagation is used)
+use_stereo: false # if we have more than 1 camera, if we should try to track stereo constraints
+max_cameras: 1 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (all mono tracking)
+
+# refine the Kalibr prior online; set calib_cam_intrinsics false first if mono scale is jumpy
+calib_cam_extrinsics: true
+calib_cam_intrinsics: true
+calib_cam_timeoffset: true
+calib_imu_intrinsics: false
+calib_imu_g_sensitivity: false
+
+max_clones: 15          # 0.5 s sliding window at 30 Hz
+max_slam: 50
+max_slam_in_update: 25
+max_msckf_in_update: 40
+dt_slam_delay: 2
+
+gravity_mag: 9.80665
+
+feat_rep_msckf: "GLOBAL_3D"
+feat_rep_slam: "ANCHORED_MSCKF_INVERSE_DEPTH"
+feat_rep_aruco: "ANCHORED_MSCKF_INVERSE_DEPTH"
+
+# zero velocity update: only while sitting still before the first motion (never during hover,
+# this fork fires ZUPT on disparity OR chi2+velocity)
+try_zupt: true
+zupt_chi2_multipler: 1
+zupt_max_velocity: 0.25
+zupt_noise_multiplier: 10
+zupt_max_disparity: 1.0
+zupt_only_at_beginning: true
+
+# ==================================================================
+# ==================================================================
+
+# static init: window = 1 s still + 1 s motion onset; init_imu_thresh >= 3x static 3-D acc std
+# (imu_check.py static prints a suggestion). Drop to 0.35 only on repeated "no IMU excitation".
+init_window_time: 2.0
+init_imu_thresh: 0.3   # gentle hand-lift did not exceed 0.5; static noise is 0.015
+init_max_disparity: 10.0
+init_max_features: 50
+
+init_dyn_use: true   # static init first (still start), dynamic init as fallback when already moving
+init_dyn_mle_opt_calib: false
+init_dyn_mle_max_iter: 50
+init_dyn_mle_max_time: 0.05
+init_dyn_mle_max_threads: 6
+init_dyn_num_pose: 6
+init_dyn_min_deg: 10.0
+
+init_dyn_inflation_ori: 10
+init_dyn_inflation_vel: 100
+init_dyn_inflation_bg: 10
+init_dyn_inflation_ba: 100
+init_dyn_min_rec_cond: 1e-20
+
+init_dyn_bias_g: [0.0, 0.0, 0.0]
+init_dyn_bias_a: [0.0, 0.0, 0.0]
+
+# ==================================================================
+# ==================================================================
+
+record_timing_information: false
+record_timing_filepath: "/tmp/traj_timing.txt"
+
+save_total_state: false
+filepath_est: "/tmp/ov_estimate.txt"
+filepath_std: "/tmp/ov_estimate_std.txt"
+filepath_gt: "/tmp/ov_groundtruth.txt"
+
+# ==================================================================
+# ==================================================================
+
+# front-end feature tracking (KLT) on 640x400
+use_klt: true
+num_pts: 200   # 300 tried on loop1 2026-10-12: +20 % CPU, loop error not better (1.5-2.4 m vs 0.7-1.35 m)
+fast_threshold: 15
+grid_x: 5
+grid_y: 4
+min_px_dist: 10
+knn_ratio: 0.70   # DOES NOTHING UNLESS KLT IS DISABLED
+track_frequency: 35.0   # must be ABOVE the camera rate (30) or frames get dropped
+downsample_cameras: false  # already decoded at half resolution by arducam_node
+num_opencv_threads: 4 # -1: auto, 0-1: serial, >1: number of threads
+histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
+
+# aruco tag tracker for the system
+use_aruco: false
+num_aruco: 1024
+downsize_aruco: true
+
+# ==================================================================
+# ==================================================================
+
+# camera noises and chi-squared threshold multipliers
+up_msckf_sigma_px: 1.5
+up_msckf_chi2_multipler: 2
+up_slam_sigma_px: 1.5
+up_slam_chi2_multipler: 2
+up_aruco_sigma_px: 1
+up_aruco_chi2_multipler: 1
+
+# masks for our images (add one if props/legs are in view: see a2rl generate_mask.py)
+use_mask: false
+mask0: masks/mask0.png
+
+# imu and camera spacial-temporal
+relative_config_imu: "imu.yaml"
+relative_config_imucam: "camchain-imucam.yaml"
+
+init_world_with_vicon: false

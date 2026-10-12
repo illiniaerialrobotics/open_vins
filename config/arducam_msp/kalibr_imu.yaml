@@ -1,0 +1,13 @@
+# Kalibr IMU input (kalibr_calibrate_imu_camera --imu kalibr_imu.yaml)
+# Betaflight Kakute H7 IMU over MSP (ros_to_msp_bridge, msp/imu), 200 Hz.
+# Noise values: Allan variance from the 5.2 h static bag of Oct 2025 on this FC
+# (~/record/oldbags/just-imu). That bag was scaled with a gyro factor 4x too large, so the gyro
+# values are ~4x inflated on top of the usual Kalibr inflation; measured 2026-10-11 at the correct
+# scale the white noise is ~1.2e-4 rad/s/sqrt(Hz) (gyro) and ~1e-3 m/s^2/sqrt(Hz) (acc), i.e. these
+# values are 7-25x conservative. Fine for Kalibr; tighten later with a fresh Allan run if desired.
+rostopic: /msp/imu
+update_rate: 200.0
+accelerometer_noise_density: 0.02533880196780273    # [m/s^2/sqrt(Hz)]
+accelerometer_random_walk:   0.0010877063367163225  # [m/s^3/sqrt(Hz)]
+gyroscope_noise_density:     0.0009131001160692596  # [rad/s/sqrt(Hz)]
+gyroscope_random_walk:       3.415041814567389e-05  # [rad/s^2/sqrt(Hz)]

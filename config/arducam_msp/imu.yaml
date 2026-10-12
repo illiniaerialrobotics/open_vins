@@ -1,0 +1,40 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+# OpenVINS IMU config for the Betaflight FC IMU read over MSP (same values as kalibr_imu.yaml)
+imu0:
+  T_i_b:
+    - [1.0, 0.0, 0.0, 0.0]
+    - [0.0, 1.0, 0.0, 0.0]
+    - [0.0, 0.0, 1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  # 2026-10-12: halved from the Oct 2025 Allan values (0.0253 / 0.00109 / 9.13e-4 / 3.42e-5),
+  # which were 7-25x above the measured white noise. Still ~4-12x conservative.
+  accelerometer_noise_density: 0.01267
+  accelerometer_random_walk: 0.000544
+  gyroscope_noise_density: 0.000457
+  gyroscope_random_walk: 1.71e-05
+  model: kalibr
+  rostopic: /msp/imu
+  time_offset: 0.0
+  update_rate: 200.0
+  # identity IMU intrinsics (calib_imu_intrinsics is off)
+  Tw:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoGYRO:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Ta:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  R_IMUtoACC:
+    - [ 1.0, 0.0, 0.0 ]
+    - [ 0.0, 1.0, 0.0 ]
+    - [ 0.0, 0.0, 1.0 ]
+  Tg:
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]
+    - [ 0.0, 0.0, 0.0 ]

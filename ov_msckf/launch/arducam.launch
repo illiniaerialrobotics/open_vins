@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- Arducam OV9782 (UVC/MJPG) -> /arducam/image_raw (mono8) with V4L2 buffer timestamps.
+     Capture 1280x800 @ 30 fps, decode directly to 640x400 grey (decode_reduce 2).
+     Exposure unit is 100 us: 40 = 4 ms. Keep exposure/gain identical for Kalibr and flight. -->
+<launch>
+  <arg name="device"            default="/dev/video0"/>
+  <arg name="capture_width"     default="1280"/>
+  <arg name="capture_height"    default="800"/>
+  <arg name="fps"               default="30"/>
+  <arg name="decode_reduce"     default="2"/>     <!-- 1,2,4,8 -> published size = capture / reduce -->
+  <arg name="auto_exposure"     default="false"/>
+  <arg name="exposure_absolute" default="10"/>    <!-- 100 us units: 10 = 1.0 ms (verified 2026-10-11; 40 clipped 50 % of pixels) -->
+  <arg name="gain"              default="10"/>    <!-- raise gain, not exposure, if dark -->
+  <arg name="frame_id"          default="arducam"/>
+  <arg name="publish_color"     default="false"/> <!-- extra bgr8 topic /<node>/image_color for videos; VIO uses mono8 -->
+  <arg name="node_name"         default="arducam"/> <!-- topic becomes /<node_name>/image_raw -->
+
+  <node pkg="ov_msckf" type="arducam_node.py" name="$(arg node_name)" output="screen"
+        respawn="true" respawn_delay="2">
+    <param name="device"            value="$(arg device)"/>
+    <param name="capture_width"     value="$(arg capture_width)"/>
+    <param name="capture_height"    value="$(arg capture_height)"/>
+    <param name="fps"               value="$(arg fps)"/>
+    <param name="decode_reduce"     value="$(arg decode_reduce)"/>
+    <param name="auto_exposure"     value="$(arg auto_exposure)"/>
+    <param name="exposure_absolute" value="$(arg exposure_absolute)"/>
+    <param name="gain"              value="$(arg gain)"/>
+    <param name="frame_id"          value="$(arg frame_id)"/>
+    <param name="publish_color"     value="$(arg publish_color)"/>
+  </node>
+</launch>
