@@ -12,6 +12,8 @@
   <arg name="launch_sensors" default="$(eval not arg('dobag'))"/>
   <arg name="imu_gyro_dps_per_lsb" default="0.061035"/>  <!-- verified 2026-10-11; used only when launch_sensors -->
   <arg name="verbosity"      default="INFO"/>
+  <arg name="imu_topic"      default="/msp/imu"/>            <!-- /kingfisher/msp/imu under agilicious, /falcon/fc/imu under FalconPilot -->
+  <arg name="cam_topic"      default="/arducam/image_raw"/>
   <arg name="config_path"    default="$(find ov_msckf)/../config/arducam_msp/estimator_config.yaml"/>
   <arg name="dosave"         default="false"/>
   <arg name="path_est"       default="/tmp/traj_estimate.txt"/>
@@ -27,6 +29,9 @@
     </include>
   </group>
 
+  <!-- the estimator subscribes to the topics named in the config yamls; remap them to the live ones -->
+  <remap from="/msp/imu" to="$(arg imu_topic)"/>
+  <remap from="/arducam/image_raw" to="$(arg cam_topic)"/>
   <include file="$(find ov_msckf)/launch/subscribe.launch">
     <arg name="config"      value="arducam_msp"/>
     <arg name="config_path" value="$(arg config_path)"/>
