@@ -12,13 +12,13 @@ max_cameras: 1 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (
 
 # refine the Kalibr prior online; set calib_cam_intrinsics false first if mono scale is jumpy
 calib_cam_extrinsics: true
-calib_cam_intrinsics: true
+calib_cam_intrinsics: false   # 2026-10-29: intrinsics are solid (Kalibr 0.28 px); online extrinsics + time offset stay on
 calib_cam_timeoffset: true
 calib_imu_intrinsics: false
 calib_imu_g_sensitivity: false
 
-max_clones: 15          # 0.5 s sliding window at 30 Hz
-max_slam: 50
+max_clones: 20          # 2026-10-29 arena sweep: with max_slam 100 the hover drift on flight 10:40 fell to 0.3 m / 60 s
+max_slam: 100
 max_slam_in_update: 25
 max_msckf_in_update: 40
 dt_slam_delay: 2
