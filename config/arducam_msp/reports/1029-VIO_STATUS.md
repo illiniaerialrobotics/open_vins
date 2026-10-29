@@ -23,7 +23,7 @@ flight with the same corrections, diverges within 45 s. Recommendation: OpenVINS
 the F7 airframe as the first action.
 
 **What changed since the handheld tests.** The flight controller was replaced on 10-25 (Kakute H7 destroyed in a
-crash -> Kakute F7 on the Jetson UART `/dev/ttyTHS0`). Same IMU class, scales re-verified on the bench, but the
+crash on 10-24 -> Kakute F7 on the Jetson UART `/dev/ttyTHS0`, serial task at 600 Hz). Same IMU class, scales re-verified on the bench, but the
 IMU now sits at a different place on the airframe than the one Kalibr calibrated against, and the airframe
 vibrates: hovering, the IMU sees 0.55 m/s^2 and 0.03-0.2 rad/s of motion that handheld data never had.
 
@@ -36,7 +36,7 @@ FalconPilot. Landing and flips stay on fallback logic (mocap or FC attitude hold
 | element | value |
 |---|---|
 | camera | Arducam OV9782, global shutter, 1280x800 MJPG captured, published 640x400 mono8 at 32 Hz, exposure 1.0 ms, gain 10, V4L2 kernel timestamps |
-| IMU | Betaflight FC gyro+accel over MSP, 200 Hz, 0.061035 deg/s per count, 2024 counts/g, stamp = receive - 2 ms; now a Kakute F7 on /dev/ttyTHS0 at 1 Mbaud (H7 on CH340 until 10-25) |
+| IMU | Betaflight FC gyro+accel over MSP, 200 Hz, 0.061035 deg/s per count, 2024 counts/g, stamp = receive - 2 ms; now a Kakute F7 on /dev/ttyTHS0 at 1 Mbaud, serial task 600 Hz with three requests in flight (H7 on CH340 at 1000 Hz until its crash on 10-24) |
 | calibration | Kalibr 2026-10-11 (H7 airframe): camera 0.28 px, cam-IMU 0.35 px, time offset -1.1 ms, camera 63 mm ahead / 58 mm above the IMU, optical axis 8.6 deg up |
 | estimators | OpenVINS (open_vins `yan-arducam-vio`, config `config/arducam_msp`) and sqrt-VINS (`sqrtVINS`, config `config/arducam_msp`, same calibration files) |
 | frames | body: camera-forward +x, left +y, up +z; raw estimator world: z up, arbitrary heading; `vio_world_align`: origin + heading at the first pose |
@@ -46,7 +46,7 @@ FalconPilot. Landing and flips stay on fallback logic (mocap or FC attitude hold
 
 | step | command |
 |---|---|
-| sensors (bench) | `roslaunch ov_msckf arducam_msp_sensors.launch` (camera + FC-IMU bridge; FC `serial_update_rate_hz = 1000`) |
+| sensors (bench) | `roslaunch ov_msckf arducam_msp_sensors.launch` (camera + FC-IMU bridge; the IMU must hold 200 Hz: H7 `serial_update_rate_hz = 1000`, F7 600 with `imu_inflight 3`) |
 | sensors (FalconPilot owns the FC) | `roslaunch ov_msckf arducam.launch` for the camera; IMU comes from the server as `/falcon/fc/imu` |
 | record handheld | `rosrun ov_msckf record_kalibr.sh imucam <name>`; 3 s still, brisk lift, loop, back on the mark |
 | record a flight | `rosbag record -O <file> /arducam/image_raw /kingfisher/msp/imu /kingfisher/msp/attitude /natnet_ros/kingfisher/odom /natnet_ros/kingfisher/pose /ov_msckf/odomimu /vio_world_align/odom_world` |
@@ -149,8 +149,7 @@ real airframe motion and control activity, not propeller harmonics. Hover levels
 0.15 / 0.50 / 0.19 m/s^2 (x/y/z), gyro std 0.04 / 0.04 / 0.10 rad/s. Adding smoothing on the FC would add delay
 (every 10 Hz of cut-off below 25 Hz costs several ms of lag) that the camera-IMU time offset cannot absorb
 consistently, and the offline sweep shows that modelling more IMU noise in the estimator does **not** help
-(x2: worse, x4: diverged on 10-40). Keep the FC filters as they are, keep `serial_update_rate_hz = 1000`, and
-never change them between calibration and flight. The y-axis 0.5 m/s^2 oscillation at 6 Hz is worth a look on
+(x2: worse, x4: diverged on 10-40). Keep the FC filters as they are, keep the FC serial task where the IMU holds 200 Hz (F7: `serial_update_rate_hz = 600` with three requests in flight; 1000 starved its gyro loop), and never change them between calibration and flight. The y-axis 0.5 m/s^2 oscillation at 6 Hz is worth a look on
 the control side (roll loop), not on the sensor side.
 
 ## 7. Integration with FalconPilot
