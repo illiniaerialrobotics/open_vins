@@ -3,11 +3,23 @@
 # variants, scored against mocap.   arena_sweep.sh <out.md> <bag1> [bag2 ...]  (variants via VARIANTS env, space separated)
 set -u
 OUT="${1:?out.md}"; shift
-SRC="$(rospack find ov_msckf)/../config/arducam_msp"; SCR="$(rospack find ov_msckf)/scripts"
+SRC="${CFG_SRC:-$(rospack find ov_msckf)/../config/arducam_msp}"; SCR="$(rospack find ov_msckf)/scripts"
 W="${SWEEP_TMP:-$HOME/record/arena_eval/sweep}"; mkdir -p "$W"
 IMU_TOPIC="${IMU_TOPIC:-/kingfisher/msp/imu}"
+ATT_TOPIC="${ATT_TOPIC:-/kingfisher/msp/attitude}"   # FalconPilot bags: /falcon/fc/attitude
+# RECORD_TOPICS (space separated, default none): recorded into $W/viz_<bag>_<variant>.bag during the replay.
+# The visualizer publishes these only while someone subscribes, so the recorder starts before the node on a
+# private roscore. Useful: /ov_msckf/loop_extrinsic (online camera-IMU calibration), /ov_msckf/points_msckf
+# /ov_msckf/points_slam (features used per update), /ov_msckf/odomimu.
+RECORD_TOPICS="${RECORD_TOPICS:-}"
 declare -A VAR=(
   [base]=""
+  [nozupt]="s/^try_zupt: true/try_zupt: false/"
+  [fixed_extr]="s/^calib_cam_extrinsics: true/calib_cam_extrinsics: false/"
+  [fixed_all]="s/^calib_cam_extrinsics: true/calib_cam_extrinsics: false/;s/^calib_cam_timeoffset: true/calib_cam_timeoffset: false/"
+  [pts300]="s/^num_pts: 200/num_pts: 300/"
+  [zupt_imuonly]="s/^zupt_max_disparity: .*/zupt_max_disparity: 0.0/"
+  [thresh1]="s/^init_imu_thresh: .*/init_imu_thresh: 1.0/"
   [noise_x2]="s/^  accelerometer_noise_density: .*/  accelerometer_noise_density: 0.0253/;s/^  accelerometer_random_walk: .*/  accelerometer_random_walk: 0.00109/;s/^  gyroscope_noise_density: .*/  gyroscope_noise_density: 0.000913/;s/^  gyroscope_random_walk: .*/  gyroscope_random_walk: 3.42e-05/"
   [noise_x4]="s/^  accelerometer_noise_density: .*/  accelerometer_noise_density: 0.0507/;s/^  accelerometer_random_walk: .*/  accelerometer_random_walk: 0.00218/;s/^  gyroscope_noise_density: .*/  gyroscope_noise_density: 0.00183/;s/^  gyroscope_random_walk: .*/  gyroscope_random_walk: 6.84e-05/"
   [noise_x8]="s/^  accelerometer_noise_density: .*/  accelerometer_noise_density: 0.1014/;s/^  accelerometer_random_walk: .*/  accelerometer_random_walk: 0.00435/;s/^  gyroscope_noise_density: .*/  gyroscope_noise_density: 0.00366/;s/^  gyroscope_random_walk: .*/  gyroscope_random_walk: 1.37e-04/"
@@ -20,6 +32,8 @@ declare -A VAR=(
 )
 VARIANTS="${VARIANTS:-base noise_x2 noise_x4 noise_x8 noise_x4_fixintr noise_x4_chi2x4 noise_x4_sigma3 noise_x4_thresh1 noise_x4_nozupt noise_x4_fixall}"
 export ROS_MASTER_URI=http://localhost:11396 ROS_IP=127.0.0.1
+CORE=""
+if [ -n "$RECORD_TOPICS" ] && ! rostopic list > /dev/null 2>&1; then roscore -p 11396 > "$W/roscore.log" 2>&1 & CORE=$!; sleep 3; fi
 [ -s "$OUT" ] || { echo "| variant | bag | init t | ATE RMS m | last 20% m | worst 10 s m | orient RMS deg | per-10s |" > "$OUT"; echo "|---|---|---|---|---|---|---|---|" >> "$OUT"; }
 for v in $VARIANTS; do
   D="$W/cfg_$v"; rm -rf "$D"; cp -r "$SRC" "$D"
@@ -29,8 +43,11 @@ for v in $VARIANTS; do
     N="$(basename "${B%.bag}")"; grep -q "^| $v | $N |" "$OUT" && { echo "skip $v $N"; continue; }
     EST="$W/traj_${N}_${v}.txt"; rm -f "$EST"
     DUR=$(rosbag info "$B" 2>/dev/null | awk '/duration:/ {print $NF}' | tr -d '()s' | tail -1); DUR=${DUR%.*}
-    timeout $(( DUR + 120 )) roslaunch -p 11396 ov_msckf serial.launch config:=arducam_msp config_path:="$D/estimator_config.yaml" bag:="$B" max_cameras:=1 use_stereo:=false dosave:=true path_est:="$EST" verbosity:=WARNING > "$W/log_${N}_${v}.txt" 2>&1
-    R=$("$SCR/score_vs_mocap.sh" "$B" "$EST" 2>&1)
+    REC=""
+    if [ -n "$RECORD_TOPICS" ]; then rosbag record -q -O "$W/viz_${N}_${v}.bag" $RECORD_TOPICS > /dev/null 2>&1 & REC=$!; sleep 2; fi
+    timeout $(( DUR + 120 )) roslaunch -p 11396 ov_msckf serial.launch config:=arducam_msp config_path:="$D/estimator_config.yaml" bag:="$B" max_cameras:=1 use_stereo:=false dosave:=true path_est:="$EST" verbosity:=${VERB:-WARNING} > "$W/log_${N}_${v}.txt" 2>&1
+    [ -n "$REC" ] && { kill -INT $REC 2>/dev/null; wait $REC 2>/dev/null; }
+    R=$("$SCR/score_vs_mocap.sh" "$B" "$EST" --attitude "$ATT_TOPIC" 2>&1); echo "$R" > "$W/score_${N}_${v}.txt"
     IT=$(echo "$R" | sed -n 's/.*init at bag t = \([0-9.]*\) s.*/\1/p'); RMS=$(echo "$R" | sed -n 's/.*position residual.*RMS \([0-9.]*\) m.*/\1/p')
     L20=$(echo "$R" | sed -n 's/.*last 20 %: \([0-9.]*\) m.*/\1/p'); OR=$(echo "$R" | sed -n 's/^orientation residual after alignment: RMS \([0-9.]*\) deg.*/\1/p')
     W10=$(echo "$R" | sed -n 's/^position residual RMS per 10 s window \[m\]: //p'); WORST=$(echo "$W10" | tr '|' '\n' | awk '{print $NF}' | sort -n | tail -1)
@@ -38,4 +55,5 @@ for v in $VARIANTS; do
     echo "done $v $N: ATE ${RMS:-fail} m (init ${IT:-?} s)"
   done
 done
+[ -n "$CORE" ] && kill $CORE 2>/dev/null
 echo "sweep finished -> $OUT"

@@ -12,12 +12,15 @@ max_cameras: 1 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (
 
 # refine the Kalibr prior online; set calib_cam_intrinsics false first if mono scale is jumpy
 calib_cam_extrinsics: true
-calib_cam_intrinsics: false   # 2026-10-29: intrinsics are solid (Kalibr 0.28 px); online extrinsics + time offset stay on
+# 2026-10-29: intrinsics are solid (Kalibr 0.28 px), so they stay fixed; online extrinsics + time offset stay on.
+# (keep comments with ': ' on their own line: OpenCV's YAML reader turns an inline one into a map)
+calib_cam_intrinsics: false
 calib_cam_timeoffset: true
 calib_imu_intrinsics: false
 calib_imu_g_sensitivity: false
 
-max_clones: 20          # 2026-10-29 arena sweep: with max_slam 100 the hover drift on flight 10:40 fell to 0.3 m / 60 s
+# 2026-10-29 arena sweep - with max_slam 100 the hover drift on flight 10:40 fell to 0.3 m / 60 s
+max_clones: 20
 max_slam: 100
 max_slam_in_update: 25
 max_msckf_in_update: 40
@@ -81,7 +84,9 @@ filepath_gt: "/tmp/ov_groundtruth.txt"
 
 # front-end feature tracking (KLT) on 640x400
 use_klt: true
-num_pts: 200   # 300 tried on loop1 2026-10-12: +20 % CPU, loop error not better (1.5-2.4 m vs 0.7-1.35 m)
+# 300 tried on loop1 2026-10-12 - +20 % CPU, loop error not better (1.5-2.4 m vs 0.7-1.35 m); 300 on the arena flight 10:45 gave 0.45 vs 0.60 m for +3.6 ms/frame
+# 2026-11-04 - 300 adopted from the 11-02 arena flight (ATE 1.15 -> 0.62 m, brake slip 2.5 -> 1.2 m) and 10-26 10:45 (0.60 -> 0.45 m), +3.6 ms/frame
+num_pts: 300
 fast_threshold: 15
 grid_x: 5
 grid_y: 4

@@ -4,16 +4,19 @@
      and adds the IMU scaling/stamping params. Nothing in agilicious is modified.
 
      REQUIRED before use (see config/arducam_msp/README.md):
-       * Betaflight CLI: set serial_update_rate_hz = 1000 ; save
+       * FC: Kakute F7 on the Jetson UART /dev/ttyTHS0 since 2026-10-25 (the H7 was on the CH340
+         /dev/ttyUSB0). Its serial task must keep the IMU at 200 Hz with imu_inflight requests in
+         flight; check with `rostopic hz /msp/imu` (the H7 needed serial_update_rate_hz = 1000).
        * imu_gyro_dps_per_lsb = 0.061035 (= 1/16.384, raw 2000 dps counts) was verified on
          2026-10-11 with imu_check.py (360 deg table turn -> 5956 counts*deg, implied 0.0604).
          The bridge's own default (1.0) is 16x too large; keep this launch's default.
      Stamp = receive time - stamp_offset_sec (reply path of the MSP round trip ~ 2 ms). -->
 <launch>
   <arg name="launch_camera"        default="true"/>
-  <arg name="port"                 default="/dev/ttyUSB0"/>
+  <arg name="port"                 default="/dev/ttyTHS0"/>  <!-- Kakute F7 on the Jetson UART; the H7 was /dev/ttyUSB0 -->
   <arg name="baudrate"             default="1000000"/>
   <arg name="imu_rate_hz"          default="200.0"/>
+  <arg name="imu_inflight"         default="3"/>  <!-- MSP requests in flight for the IMU poller (F7: 3 to hold 200 Hz) -->
   <arg name="imu_gyro_dps_per_lsb" default="0.061035"/>  <!-- verified 2026-10-11, see header -->
   <arg name="imu_acc_lsb_per_g"    default="2024.0"/>  <!-- |acc| at rest = 9.69 with 2048 in two poses -> scale, not bias -->
   <arg name="stamp_offset_sec"     default="0.002"/>
@@ -47,6 +50,7 @@
     <param name="attitude_rate_hz"       value="$(arg attitude_rate_hz)"/>
     <param name="publish_imu"            value="true"/>
     <param name="imu_rate_hz"            value="$(arg imu_rate_hz)"/>
+    <param name="imu_inflight"           value="$(arg imu_inflight)"/>
     <param name="imu_gyro_dps_per_lsb"   value="$(arg imu_gyro_dps_per_lsb)"/>
     <param name="imu_acc_lsb_per_g"      value="$(arg imu_acc_lsb_per_g)"/>
     <param name="stamp_offset_sec"       value="$(arg stamp_offset_sec)"/>
