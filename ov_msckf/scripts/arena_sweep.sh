@@ -18,6 +18,7 @@ declare -A VAR=(
   [fixed_extr]="s/^calib_cam_extrinsics: true/calib_cam_extrinsics: false/"
   [fixed_all]="s/^calib_cam_extrinsics: true/calib_cam_extrinsics: false/;s/^calib_cam_timeoffset: true/calib_cam_timeoffset: false/"
   [pts300]="s/^num_pts: 200/num_pts: 300/"
+  [clahe]="s/^histogram_method: \"HISTOGRAM\"/histogram_method: \"CLAHE\"/"
   [zupt_imuonly]="s/^zupt_max_disparity: .*/zupt_max_disparity: 0.0/"
   [thresh1]="s/^init_imu_thresh: .*/init_imu_thresh: 1.0/"
   [noise_x2]="s/^  accelerometer_noise_density: .*/  accelerometer_noise_density: 0.0253/;s/^  accelerometer_random_walk: .*/  accelerometer_random_walk: 0.00109/;s/^  gyroscope_noise_density: .*/  gyroscope_noise_density: 0.000913/;s/^  gyroscope_random_walk: .*/  gyroscope_random_walk: 3.42e-05/"

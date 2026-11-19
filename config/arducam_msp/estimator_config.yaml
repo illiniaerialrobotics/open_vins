@@ -95,7 +95,9 @@ knn_ratio: 0.70   # DOES NOTHING UNLESS KLT IS DISABLED
 track_frequency: 35.0   # must be ABOVE the camera rate (30) or frames get dropped
 downsample_cameras: false  # already decoded at half resolution by arducam_node
 num_opencv_threads: 4 # -1: auto, 0-1: serial, >1: number of threads
-histogram_method: "HISTOGRAM" # NONE, HISTOGRAM, CLAHE
+# 2026-11-19 - CLAHE adopted (Yan, 11-16, for outdoor light) after a mocap-scored check on four flights; 11-02 ATE 0.62 -> 0.43 m,
+# 11-11 fig8 1.18 -> 1.06 m, 11-11 roll bag holds after landing, 10-26 fast flight 0.45 -> 0.62 m (in-flight drift equal)
+histogram_method: "CLAHE" # NONE, HISTOGRAM, CLAHE
 
 # aruco tag tracker for the system
 use_aruco: false
