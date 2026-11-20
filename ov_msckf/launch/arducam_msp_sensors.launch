@@ -13,7 +13,7 @@
      Stamp = receive time - stamp_offset_sec (reply path of the MSP round trip ~ 2 ms). -->
 <launch>
   <arg name="launch_camera"        default="true"/>
-  <arg name="port"                 default="/dev/ttyTHS0"/>  <!-- Kakute F7 on the Jetson UART; the H7 was /dev/ttyUSB0 -->
+  <arg name="port"                 default="/dev/ttyUSB0"/>  <!-- Kakute H7 on the CH341 adapter since 11-2026 (the F7 of 10-25..11-11 was /dev/ttyTHS0) -->
   <arg name="baudrate"             default="1000000"/>
   <arg name="imu_rate_hz"          default="200.0"/>
   <arg name="imu_inflight"         default="3"/>  <!-- MSP requests in flight for the IMU poller (F7: 3 to hold 200 Hz) -->
