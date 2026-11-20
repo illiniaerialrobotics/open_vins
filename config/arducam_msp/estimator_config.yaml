@@ -11,11 +11,13 @@ use_stereo: false # if we have more than 1 camera, if we should try to track ste
 max_cameras: 1 # how many cameras we have 1 = mono, 2 = stereo, >2 = binocular (all mono tracking)
 
 # refine the Kalibr prior online; set calib_cam_intrinsics false first if mono scale is jumpy
-calib_cam_extrinsics: true
+# 2026-11-19 - extrinsics and time offset FROZEN at the Kalibr values of the 11-16 H7 recordings (two bags agree within
+# 4.3 mm / 0.10 deg / 0.08 ms); the online states had been absorbing model error (10-45 cm wander on the F7 flights)
+calib_cam_extrinsics: false
 # 2026-10-29: intrinsics are solid (Kalibr 0.28 px), so they stay fixed; online extrinsics + time offset stay on.
 # (keep comments with ': ' on their own line: OpenCV's YAML reader turns an inline one into a map)
 calib_cam_intrinsics: false
-calib_cam_timeoffset: true
+calib_cam_timeoffset: false
 calib_imu_intrinsics: false
 calib_imu_g_sensitivity: false
 

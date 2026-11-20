@@ -1,0 +1,19 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+# Kalibr cam-IMU 2026-11-19 on bag vio_vio_2026-11-16-09-23-43 (A0 grid, 1039 of 1330 frames, reprojection 0.40 px,
+# gyro err 0.0046 rad/s, acc err 0.12 m/s^2, timeshift -2.7432 ms). Camera at 81.0 / -3.6 / 102.7 mm in the IMU frame.
+# IMU identity (H7 vs F7) of that recording to be confirmed by Yan before this replaces camchain-imucam.yaml.
+cam0:
+  T_cam_imu:
+    - [0.0172194836, -0.9998158018, -0.0084765480, -0.0041134301]
+    - [0.1694760329, 0.0112737487, -0.9854698254, 0.0875123798]
+    - [0.9853838661, 0.0155327098, 0.1696389438, -0.0972291963]
+    - [0.0000000000, 0.0000000000, 0.0000000000, 1.0000000000]
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs: [0.03171653910249813, -0.05300086267560892, 0.0006192340557626495, 0.00031283283679083435]
+  distortion_model: radtan
+  intrinsics: [448.91747228505386, 449.041404645634, 348.4641372312585, 193.56814130645924]
+  resolution: [640, 400]
+  rostopic: /arducam/image_raw
+  timeshift_cam_imu: -0.0027432002570296956

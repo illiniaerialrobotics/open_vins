@@ -1,0 +1,20 @@
+%YAML:1.0 # need to specify the file type at the top!
+
+# Kalibr result 2026-10-11, imucam_run1 (reprojection 0.35 px, timeshift -1.08 ms) made with the Kakute H7.
+# 2026-10-29 INTERIM: translation replaced by the value OpenVINS converged to on the Kakute F7 airframe
+# (camera at 69, -41, 61 mm in the IMU frame instead of 63, 3, 58): arena ATE 5.6 m -> 0.6 m. Rotation and
+# intrinsics unchanged. Replace the whole file with a Kalibr cam-IMU re-run on the F7 airframe when possible. Source: imucam_run1_2026-10-11-02-38-04-camchain-imucam.yaml
+cam0:
+  T_cam_imu:
+    - [0.0271423171, -0.9993507702, -0.0236924594, -0.0409000000]
+    - [0.1485526419, 0.0274704358, -0.9885228817, 0.0511000000]
+    - [0.9885319455, 0.0233112241, 0.1492018084, -0.0760000000]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs: [0.03171653910249813, -0.05300086267560892, 0.0006192340557626495, 0.00031283283679083435]
+  distortion_model: radtan
+  intrinsics: [448.91747228505386, 449.041404645634, 348.4641372312585, 193.56814130645924]
+  resolution: [640, 400]
+  rostopic: /arducam/image_raw
+  timeshift_cam_imu: -0.0010779705453354545
